@@ -1,11 +1,6 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-target 'DAAlertController', :exclusive => true do
-  pod "DAAlertController", :path => "../"
-end
+platform :ios, "7.0"
 
-target 'Tests', :exclusive => true do
-  pod "DAAlertController", :path => "../"
+pod 'DAAlertController', :git => 'https://github.com/daria-kopaliani/DAAlertController.git'
 
-  
-end

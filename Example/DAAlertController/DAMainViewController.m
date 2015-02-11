@@ -41,10 +41,6 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
     
     [super viewDidLoad];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.title = @"DAAlertViewController Demo";
-    }
-    
     self.navigationBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Show Action Sheet" style:UIBarButtonItemStylePlain target:self action:@selector(showActionSheetFromBarButtonItem:)];
     self.alertType = DAMainViewControllerAlertTypeAlertView;
     
@@ -171,14 +167,17 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
             self.numberOfTextFieldsLabel.enabled = self.numberOfTextfieldsStepper.enabled = YES;
             self.numberOfTextfieldsStepper.tintColor = nil;
             self.navigationItem.rightBarButtonItem = nil;
-            
+            self.navigationItem.title = @"DAAlertViewController Demo";
         } break;
         case DAMainViewControllerAlertTypeActionSheet: {
             [self.alertTypeButton setTitle:@"Action Sheet" forState:UIControlStateNormal];
             [self.showAlertButton setTitle:@"Show Action Sheet" forState:UIControlStateNormal];
             self.numberOfTextFieldsLabel.enabled = self.numberOfTextfieldsStepper.enabled = NO;
             self.numberOfTextfieldsStepper.tintColor = [UIColor lightGrayColor];
-            self.navigationItem.rightBarButtonItem = self.navigationBarButtonItem;;
+            self.navigationItem.rightBarButtonItem = self.navigationBarButtonItem;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                self.navigationItem.title = nil;
+            }
         } break;
     }
 }

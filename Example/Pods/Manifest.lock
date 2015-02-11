@@ -2,11 +2,11 @@ PODS:
   - DAAlertController (0.1.0)
 
 DEPENDENCIES:
-  - DAAlertController (from `../`)
+  - DAAlertController (from `https://github.com/daria-kopaliani/DAAlertController.git`)
 
 EXTERNAL SOURCES:
   DAAlertController:
-    :path: ../
+    :git: https://github.com/daria-kopaliani/DAAlertController.git
 
 SPEC CHECKSUMS:
   DAAlertController: 99db8b31256607793cf200dd316bac1a5b812e1a

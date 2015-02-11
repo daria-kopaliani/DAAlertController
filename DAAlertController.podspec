@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "DAAlertController"
-  s.version          = "0.1.0"
+  s.version          = "1.0.1"
   s.summary          = "DAAlertController is pretty much a UIAlertController for both iOS 8 and 7."
   s.description      = <<-DESC
                        An optional longer description of DAAlertController
