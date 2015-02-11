@@ -1,0 +1,14 @@
+PODS:
+  - DAAlertController (0.1.0)
+
+DEPENDENCIES:
+  - DAAlertController (from `../`)
+
+EXTERNAL SOURCES:
+  DAAlertController:
+    :path: ../
+
+SPEC CHECKSUMS:
+  DAAlertController: 005da0aee99ba0d58317c1d5a68f7974c9b36621
+
+COCOAPODS: 0.34.4
