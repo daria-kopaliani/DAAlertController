@@ -193,6 +193,10 @@
     }
     
     NSArray *otherButtonTitles = [otherActions valueForKey:@"title"];
+    
+    /*
+     Again, it turns out it's absolutely neccessary to pass `otherButtonTitles` in the designated initializer if any, in case of passing `nil` `UIActionSheet` might be rendered incorrectly (i.e. separators are missing) for some cases.
+     */
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:[self defaultAlertController] cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:itemAt(otherButtonTitles, 0), itemAt(otherButtonTitles, 1), itemAt(otherButtonTitles, 2), itemAt(otherButtonTitles, 3), itemAt(otherButtonTitles, 4), itemAt(otherButtonTitles, 5), itemAt(otherButtonTitles, 6), itemAt(otherButtonTitles, 7), itemAt(otherButtonTitles, 8), itemAt(otherButtonTitles, 9), itemAt(otherButtonTitles, 10), nil];
     if (cancelAction) {
         objc_setAssociatedObject(actionSheet, @"cancelAction", cancelAction, OBJC_ASSOCIATION_COPY);

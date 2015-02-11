@@ -9,6 +9,6 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  DAAlertController: 005da0aee99ba0d58317c1d5a68f7974c9b36621
+  DAAlertController: 99db8b31256607793cf200dd316bac1a5b812e1a
 
 COCOAPODS: 0.34.4
