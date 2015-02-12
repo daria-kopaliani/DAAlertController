@@ -44,9 +44,9 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
     self.navigationBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Show Action Sheet" style:UIBarButtonItemStylePlain target:self action:@selector(showActionSheetFromBarButtonItem:)];
     self.alertType = DAMainViewControllerAlertTypeAlertView;
     
-    self.defaultButtonsStepper.value = 2;
+    self.defaultButtonsStepper.value = 1;
     self.cancelButtonsStepper.value = 1;
-    self.destructiveButtonsStepper.value = 1;
+    self.destructiveButtonsStepper.value = 2;
     [self updateCancelButtonsLabel];
     [self updateDefaultButtonsLabel];
     [self updateDestructiveButtonsLabel];
@@ -87,30 +87,49 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
     [self updateNumberOfTextFieldsLabel];
 }
 
-- (IBAction)showActionSheetFromButton:(UIButton *)button {
+- (void)showActionSheetFromBarButtonItem:(UIBarButtonItem *)barButtonItem {
     
-    [DAAlertController showActionSheetInViewController:self fromSourceView:button withTitle:@"Title" message:@"This is a message" actions:[self currentActions] permittedArrowDirections:UIPopoverArrowDirectionAny];
-}
+    self.cancelButtonsLabel.hidden = self.cancelButtonsStepper.hidden = self.defaultButtonsLabel.hidden = self.defaultButtonsStepper.hidden = self.destructiveButtonsLabel.hidden = self.destructiveButtonsStepper.hidden = self.numberOfTextFieldsLabel.hidden = self.numberOfTextfieldsStepper.hidden = self.showAlertButton.hidden = YES;
 
-- (IBAction)showActionSheetFromBarButtonItem:(UIBarButtonItem *)barButtonItem {
     
     if ([self validateCurrentSettings]) {
-        [DAAlertController showActionSheetInViewController:self fromBarButtonItem:barButtonItem withTitle:@"Title" message:@"This is a message" actions:[self currentActions] permittedArrowDirections:UIPopoverArrowDirectionAny];
+        [DAAlertController showActionSheetInViewController:self fromBarButtonItem:barButtonItem withTitle:@"Action Sheet Title" message:@"This is a message." actions:[self currentActions] permittedArrowDirections:UIPopoverArrowDirectionAny];
     }
 }
 
 - (IBAction)showAlertView:(id)sender {
     
+    self.cancelButtonsLabel.hidden = self.cancelButtonsStepper.hidden = self.defaultButtonsLabel.hidden = self.defaultButtonsStepper.hidden = self.destructiveButtonsLabel.hidden = self.destructiveButtonsStepper.hidden = self.numberOfTextFieldsLabel.hidden = self.numberOfTextfieldsStepper.hidden = self.showAlertButton.hidden = YES;
     
-    if ([self validateCurrentSettings]) {
-        [DAAlertController showAlertViewInViewController:self withTitle:@"Title" message:@"This is a message." actions:[self currentActions] numberOfTextFields:self.numberOfTextfieldsStepper.value textFieldsConfigurationHandler:^void(NSArray *textFields) {
-            [textFields enumerateObjectsUsingBlock:^(UITextField *aTextField, NSUInteger idx, BOOL *stop) {
-                aTextField.placeholder = [NSString stringWithFormat:@"Placeholder %lu", (unsigned long)(idx + 1)];
-            }];
-        } validationBlock:^BOOL(NSArray *textFields) {
-            return [[textFields firstObject] text].length > 3;
-        }];
-    }
+    DAAlertAction *cancelAction = [DAAlertAction actionWithTitle:@"Cancel" style:DAAlertActionStyleCancel handler:nil];
+    DAAlertAction *signUpAction = [DAAlertAction actionWithTitle:@"Sign up" style:DAAlertActionStyleDefault handler:^{
+        // perform sign up
+    }];
+    [DAAlertController showAlertViewInViewController:self
+                                           withTitle:@"Sign up"
+                                             message:@"Please choose a nick name."
+                                             actions:@[cancelAction, signUpAction]
+                                  numberOfTextFields:2
+                      textFieldsConfigurationHandler:^(NSArray *textFields)
+    {
+        UITextField *nickNameTextField = [textFields firstObject];
+        nickNameTextField.placeholder = @"Nick name";
+        UITextField *fullNameTextField = [textFields lastObject];
+        fullNameTextField.placeholder = @"Full name";
+    } validationBlock:^BOOL(NSArray *textFields) {
+        UITextField *nickNameTextField = [textFields firstObject];
+        return nickNameTextField.text.length >= 5;
+    }];
+    
+    //    if ([self validateCurrentSettings]) {
+//        [DAAlertController showAlertViewInViewController:self withTitle:@"Title" message:@"This is a message." actions:[self currentActions] numberOfTextFields:self.numberOfTextfieldsStepper.value textFieldsConfigurationHandler:^void(NSArray *textFields) {
+//            [textFields enumerateObjectsUsingBlock:^(UITextField *aTextField, NSUInteger idx, BOOL *stop) {
+//                aTextField.placeholder = [NSString stringWithFormat:@"Placeholder %lu", (unsigned long)(idx + 1)];
+//            }];
+//        } validationBlock:^BOOL(NSArray *textFields) {
+//            return [[textFields firstObject] text].length > 3;
+//        }];
+//    }
 }
 
 #pragma mark - Convenience Methods
