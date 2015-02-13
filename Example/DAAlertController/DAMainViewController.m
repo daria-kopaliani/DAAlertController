@@ -89,47 +89,29 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
 
 - (void)showActionSheetFromBarButtonItem:(UIBarButtonItem *)barButtonItem {
     
-    self.cancelButtonsLabel.hidden = self.cancelButtonsStepper.hidden = self.defaultButtonsLabel.hidden = self.defaultButtonsStepper.hidden = self.destructiveButtonsLabel.hidden = self.destructiveButtonsStepper.hidden = self.numberOfTextFieldsLabel.hidden = self.numberOfTextfieldsStepper.hidden = self.showAlertButton.hidden = YES;
-
-    
     if ([self validateCurrentSettings]) {
         [DAAlertController showActionSheetInViewController:self fromBarButtonItem:barButtonItem withTitle:@"Action Sheet Title" message:@"This is a message." actions:[self currentActions] permittedArrowDirections:UIPopoverArrowDirectionAny];
     }
 }
 
-- (IBAction)showAlertView:(id)sender {
-    
-    self.cancelButtonsLabel.hidden = self.cancelButtonsStepper.hidden = self.defaultButtonsLabel.hidden = self.defaultButtonsStepper.hidden = self.destructiveButtonsLabel.hidden = self.destructiveButtonsStepper.hidden = self.numberOfTextFieldsLabel.hidden = self.numberOfTextfieldsStepper.hidden = self.showAlertButton.hidden = YES;
-    
-    DAAlertAction *cancelAction = [DAAlertAction actionWithTitle:@"Cancel" style:DAAlertActionStyleCancel handler:nil];
-    DAAlertAction *signUpAction = [DAAlertAction actionWithTitle:@"Sign up" style:DAAlertActionStyleDefault handler:^{
-        // perform sign up
-    }];
-    [DAAlertController showAlertViewInViewController:self
-                                           withTitle:@"Sign up"
-                                             message:@"Please choose a nick name."
-                                             actions:@[cancelAction, signUpAction]
-                                  numberOfTextFields:2
-                      textFieldsConfigurationHandler:^(NSArray *textFields)
-    {
-        UITextField *nickNameTextField = [textFields firstObject];
-        nickNameTextField.placeholder = @"Nick name";
-        UITextField *fullNameTextField = [textFields lastObject];
-        fullNameTextField.placeholder = @"Full name";
-    } validationBlock:^BOOL(NSArray *textFields) {
-        UITextField *nickNameTextField = [textFields firstObject];
-        return nickNameTextField.text.length >= 5;
-    }];
-    
-    //    if ([self validateCurrentSettings]) {
-//        [DAAlertController showAlertViewInViewController:self withTitle:@"Title" message:@"This is a message." actions:[self currentActions] numberOfTextFields:self.numberOfTextfieldsStepper.value textFieldsConfigurationHandler:^void(NSArray *textFields) {
-//            [textFields enumerateObjectsUsingBlock:^(UITextField *aTextField, NSUInteger idx, BOOL *stop) {
-//                aTextField.placeholder = [NSString stringWithFormat:@"Placeholder %lu", (unsigned long)(idx + 1)];
-//            }];
-//        } validationBlock:^BOOL(NSArray *textFields) {
-//            return [[textFields firstObject] text].length > 3;
-//        }];
-//    }
+- (IBAction)showAlert:(id)sender {
+
+    if ([self validateCurrentSettings]) {
+        switch (self.alertType) {
+            case DAMainViewControllerAlertTypeAlertView: {
+                [DAAlertController showAlertViewInViewController:self withTitle:@"Title" message:@"This is a message." actions:[self currentActions] numberOfTextFields:self.numberOfTextfieldsStepper.value textFieldsConfigurationHandler:^void(NSArray *textFields) {
+                    [textFields enumerateObjectsUsingBlock:^(UITextField *aTextField, NSUInteger idx, BOOL *stop) {
+                        aTextField.placeholder = [NSString stringWithFormat:@"Placeholder %lu", (unsigned long)(idx + 1)];
+                    }];
+                } validationBlock:^BOOL(NSArray *textFields) {
+                    return [[textFields firstObject] text].length > 3;
+                }];
+            } break;
+            case DAMainViewControllerAlertTypeActionSheet: {
+                [DAAlertController showActionSheetInViewController:self fromSourceView:self.view withTitle:nil message:nil actions:[self currentActions] permittedArrowDirections:UIPopoverArrowDirectionAny];
+            } break;
+        }
+    }
 }
 
 #pragma mark - Convenience Methods
@@ -179,6 +161,7 @@ typedef NS_ENUM(NSUInteger, DAMainViewControllerAlertType) {
 
 - (void)setAlertType:(DAMainViewControllerAlertType)alertType {
     
+    _alertType = alertType;
     switch (alertType) {
         case DAMainViewControllerAlertTypeAlertView: {
             [self.alertTypeButton setTitle:@"Alert View" forState:UIControlStateNormal];

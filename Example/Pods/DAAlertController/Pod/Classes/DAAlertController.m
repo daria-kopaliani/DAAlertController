@@ -31,6 +31,18 @@
     return alertController;
 }
 
++ (void)showAlertOfStyle:(DAAlertControllerStyle)style inViewController:(UIViewController *)viewController withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions {
+    
+    switch (style) {
+        case DAAlertControllerStyleAlert: {
+            [self showAlertViewInViewController:viewController withTitle:title message:message actions:actions];
+        } break;
+        case DAAlertControllerStyleActionSheet: {
+            [self showActionSheetInViewController:viewController fromSourceView:viewController.view withTitle:title message:message actions:actions permittedArrowDirections:0];
+        } break;
+    }
+}
+
 + (void)showActionSheetInViewController:(UIViewController *)viewController fromSourceView:(UIView *)sourceView withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     
     if (NSStringFromClass([UIAlertController class])) {
