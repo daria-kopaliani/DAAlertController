@@ -9,6 +9,7 @@
 #import "DAAlertController.h"
 #import <objc/runtime.h>
 
+
 #define itemAt(array, index) ((array.count > index) ? array[index] : nil)
 
 
@@ -29,6 +30,18 @@
     });
     
     return alertController;
+}
+
++ (void)showAlertOfStyle:(DAAlertControllerStyle)style inViewController:(UIViewController *)viewController withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions {
+    
+    switch (style) {
+        case DAAlertControllerStyleAlert: {
+            [self showAlertViewInViewController:viewController withTitle:title message:message actions:actions];
+        } break;
+        case DAAlertControllerStyleActionSheet: {
+            [self showActionSheetInViewController:viewController fromSourceView:viewController.view withTitle:title message:message actions:actions permittedArrowDirections:0];
+        } break;
+    }
 }
 
 + (void)showActionSheetInViewController:(UIViewController *)viewController fromSourceView:(UIView *)sourceView withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
@@ -92,7 +105,7 @@
 }
 
 + (void)showAlertViewInViewController:(UIViewController *)viewController withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions numberOfTextFields:(NSUInteger)numberOfTextFields textFieldsConfigurationHandler:(void (^)(NSArray *textFields))configurationHandler validationBlock:(BOOL (^)(NSArray *textFields))validationBlock {
-
+    
     if (NSStringFromClass([UIAlertController class])) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
         NSMutableSet *disableableActions = [NSMutableSet set];

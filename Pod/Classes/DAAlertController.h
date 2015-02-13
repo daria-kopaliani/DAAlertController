@@ -10,7 +10,15 @@
 #import "DAAlertAction.h"
 
 
+typedef NS_ENUM(NSInteger, DAAlertControllerStyle) {
+    DAAlertControllerStyleActionSheet = 0,
+    DAAlertControllerStyleAlert
+};
+
+
 @interface DAAlertController : NSObject
+
++ (void)showAlertOfStyle:(DAAlertControllerStyle)style inViewController:(UIViewController *)viewController withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions;
 
 /// Action Sheets
 + (void)showActionSheetInViewController:(UIViewController *)viewController fromSourceView:(UIView *)sourceView withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
