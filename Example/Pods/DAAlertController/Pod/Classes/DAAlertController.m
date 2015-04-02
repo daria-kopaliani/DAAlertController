@@ -9,6 +9,7 @@
 #import "DAAlertController.h"
 #import <objc/runtime.h>
 
+
 #define itemAt(array, index) ((array.count > index) ? array[index] : nil)
 
 
@@ -104,7 +105,7 @@
 }
 
 + (void)showAlertViewInViewController:(UIViewController *)viewController withTitle:(NSString *)title message:(NSString *)message actions:(NSArray *)actions numberOfTextFields:(NSUInteger)numberOfTextFields textFieldsConfigurationHandler:(void (^)(NSArray *textFields))configurationHandler validationBlock:(BOOL (^)(NSArray *textFields))validationBlock {
-
+    
     if (NSStringFromClass([UIAlertController class])) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
         NSMutableSet *disableableActions = [NSMutableSet set];

@@ -334,7 +334,7 @@
     if (validationBlock) {
         if (alertView.alertViewStyle != UIAlertViewStyleDefault) {
             UITextField *firstTextField = [alertView textFieldAtIndex:0];
-            UITextField *secondTextField = [alertView textFieldAtIndex:1];
+            UITextField *secondTextField = (alertView.alertViewStyle == UIAlertViewStyleLoginAndPasswordInput) ? [alertView textFieldAtIndex:1] : nil;
             NSArray *textFields = (secondTextField) ? @[firstTextField, secondTextField] : @[firstTextField];
             shouldEnableFirstOtherButton = validationBlock(textFields);
         }

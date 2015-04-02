@@ -10,5 +10,5 @@
 #define COCOAPODS_POD_AVAILABLE_DAAlertController
 #define COCOAPODS_VERSION_MAJOR_DAAlertController 0
 #define COCOAPODS_VERSION_MINOR_DAAlertController 1
-#define COCOAPODS_VERSION_PATCH_DAAlertController 0
+#define COCOAPODS_VERSION_PATCH_DAAlertController 3
 
