@@ -7,7 +7,8 @@
 //
 
 #import "DAAlertController.h"
-#import <objc/runtime.h>
+#import "UIAlertView+DAAlert.h"
+#import "UIActionSheet+DAAlert.h"
 
 
 #define itemAt(array, index) ((array.count > index) ? array[index] : nil)
@@ -160,7 +161,7 @@
         NSAssert(numberOfTextFields <= 2, @"DAAlertController can only have up to 2 textfields on iOS 7");
         UIAlertView *alertView = [self alertViewWithTitle:title message:message actions:actions];
         if (validationBlock) {
-            objc_setAssociatedObject(alertView, @"validationBlock", validationBlock, OBJC_ASSOCIATION_COPY);
+            alertView.daValidationBlock = validationBlock;
         }
         if (numberOfTextFields > 0) {
             NSArray *textFields = nil;
@@ -210,15 +211,24 @@
     /*
      Again, it turns out it's absolutely neccessary to pass `otherButtonTitles` in the designated initializer if any, in case of passing `nil` `UIActionSheet` might be rendered incorrectly (i.e. separators are missing) for some cases.
      */
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:[self defaultAlertController] cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:itemAt(otherButtonTitles, 0), itemAt(otherButtonTitles, 1), itemAt(otherButtonTitles, 2), itemAt(otherButtonTitles, 3), itemAt(otherButtonTitles, 4), itemAt(otherButtonTitles, 5), itemAt(otherButtonTitles, 6), itemAt(otherButtonTitles, 7), itemAt(otherButtonTitles, 8), itemAt(otherButtonTitles, 9), itemAt(otherButtonTitles, 10), nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:[self defaultAlertController] cancelButtonTitle:cancelAction.title destructiveButtonTitle:destructiveAction.title otherButtonTitles:itemAt(otherButtonTitles, 0), nil];
+    
+    [otherButtonTitles enumerateObjectsUsingBlock:^(NSString *title, NSUInteger index, BOOL *stop){
+        if (index == 0) {
+            return; // skip the 1st title because it was added with the init method
+        }
+        
+        [actionSheet addButtonWithTitle:title];
+    }];
+    
     if (cancelAction) {
-        objc_setAssociatedObject(actionSheet, @"cancelAction", cancelAction, OBJC_ASSOCIATION_COPY);
+        actionSheet.daCancelAction = cancelAction;
     }
     if (destructiveAction) {
-        objc_setAssociatedObject(actionSheet, @"destructiveAction", destructiveAction, OBJC_ASSOCIATION_COPY);
+        actionSheet.daDestructiveAction = destructiveAction;
     }
     if (otherActions) {
-        objc_setAssociatedObject(actionSheet, @"otherActions", otherActions, OBJC_ASSOCIATION_COPY);
+        actionSheet.daOtherActions = otherActions;
     }
     
     return actionSheet;
@@ -240,7 +250,7 @@
     if (!cancelActionsCount) {
         NSLog(@"UIActionSheen might not be rendered properly for iOS 7.* if you do not specify an action with a style of DAAlertActionStyleCancel");
     }
-    NSAssert(defaultActionsCount <= 10, @"DAAlertController can have up to 10 actions with a style of DAAlertActionStyleDefault; if you need to have more, please, consider using another control");
+    //NSAssert(defaultActionsCount <= 10, @"DAAlertController can have up to 10 actions with a style of DAAlertActionStyleDefault; if you need to have more, please, consider using another control");
     if (destructiveActionsCount > 1) {
         NSMutableString *destructiveActionsString = [NSMutableString string];
         DAAlertAction *firstDestructiveAction = nil;
@@ -297,10 +307,18 @@
      
      So this is my way of converting a `NSArray` into a `nil-terminated list`:
      */
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:[self defaultAlertController] cancelButtonTitle:cancelAction.title otherButtonTitles:itemAt(otherButtonTitles, 0), itemAt(otherButtonTitles, 1), itemAt(otherButtonTitles, 2), itemAt(otherButtonTitles, 3), itemAt(otherButtonTitles, 4), itemAt(otherButtonTitles, 5), itemAt(otherButtonTitles, 6), itemAt(otherButtonTitles, 7), itemAt(otherButtonTitles, 8), itemAt(otherButtonTitles, 9), itemAt(otherButtonTitles, 10), nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:[self defaultAlertController] cancelButtonTitle:cancelAction.title otherButtonTitles:itemAt(otherButtonTitles, 0), nil];
     
-    objc_setAssociatedObject(alertView, @"otherActions", otherActions, OBJC_ASSOCIATION_COPY);
-    objc_setAssociatedObject(alertView, @"cancelAction", cancelAction, OBJC_ASSOCIATION_COPY);
+    [otherButtonTitles enumerateObjectsUsingBlock:^(NSString *title, NSUInteger index, BOOL *stop){
+        if (index == 0) {
+            return; // skip the 1st title because it was added with the init method
+        }
+        
+        [alertView addButtonWithTitle:title];
+    }];
+    
+    alertView.daOtherActions = otherActions;
+    alertView.daCancelAction = cancelAction;
     
     return alertView;
 }
@@ -321,16 +339,16 @@
                                                     name:UITextFieldTextDidChangeNotification
                                                   object:nil];
     if (buttonIndex == alertView.cancelButtonIndex) {
-        [DAAlertController handleActionSelection:objc_getAssociatedObject(alertView, @"cancelAction")];
+        [DAAlertController handleActionSelection:alertView.daCancelAction];
     } else {
-        [DAAlertController handleActionSelection:objc_getAssociatedObject(alertView, @"otherActions")[buttonIndex - alertView.firstOtherButtonIndex]];
+        [DAAlertController handleActionSelection:alertView.daOtherActions[buttonIndex - alertView.firstOtherButtonIndex]];
     }
 }
 
 - (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView {
     
     BOOL shouldEnableFirstOtherButton = YES;
-    BOOL (^validationBlock)(NSArray *textFields) = objc_getAssociatedObject(alertView, @"validationBlock");
+    BOOL (^validationBlock)(NSArray *textFields) = alertView.daValidationBlock;
     if (validationBlock) {
         if (alertView.alertViewStyle != UIAlertViewStyleDefault) {
             UITextField *firstTextField = [alertView textFieldAtIndex:0];
@@ -349,11 +367,11 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     if (buttonIndex == actionSheet.cancelButtonIndex) {
-        [DAAlertController handleActionSelection:objc_getAssociatedObject(actionSheet, @"cancelAction")];
+        [DAAlertController handleActionSelection:actionSheet.daCancelAction];
     } else if (buttonIndex == actionSheet.destructiveButtonIndex) {
-        [DAAlertController handleActionSelection:objc_getAssociatedObject(actionSheet, @"destructiveAction")];
+        [DAAlertController handleActionSelection:actionSheet.daDestructiveAction];
     } else {
-        [DAAlertController handleActionSelection:objc_getAssociatedObject(actionSheet, @"otherActions")[buttonIndex - actionSheet.firstOtherButtonIndex]];
+        [DAAlertController handleActionSelection:actionSheet.daOtherActions[buttonIndex - actionSheet.firstOtherButtonIndex]];
     }
 }
 
